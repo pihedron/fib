@@ -19,4 +19,4 @@ cargo run --release
 
 ## Benchmarks
 
-This can compute between the 10 (old) to 25 (new) millionth Fibonacci number in 1 second on a laptop without loss of accuracy. So it's safe to say that it's faster than @GSheaf's code.
+This can compute between the 10 (old) to 25 (new) millionth Fibonacci number in 1 second on a laptop without loss of accuracy. So it's safe to say that it's faster than [@GSheaf](https://github.com/GSheaf)'s code.
