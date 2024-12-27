@@ -1,6 +1,6 @@
 # Fast Fibonacci
 
-This is the fastest and most accurate Fibonacci number calculator I could make.
+This is the fastest and most accurate Fibonacci number calculator I could make. It's so good it even works for negative numbers.
 
 > [!WARNING]
 > ~~Python~~ Rust laid waste to my C++.
