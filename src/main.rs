@@ -16,8 +16,8 @@ fn fib_luc(n: Integer) -> (Integer, Integer) {
     }
 
     if &n < &Integer::ZERO {
-        let (fib, luc) = fib_luc(-&n);
-        let k = ((-n & Integer::TWO) << 1) - Integer::TWO;
+        let k = ((-&n & Integer::ONE) << 1) - Integer::ONE;
+        let (fib, luc) = fib_luc(-n);
         return (fib * &k, luc * k);
     }
 
