@@ -1,36 +1,42 @@
-use num_bigint::{BigInt, Sign};
+use malachite::{
+    Natural,
+    base::num::{
+        arithmetic::traits::Square,
+        basic::traits::{One, Two, Zero},
+        conversion::traits::ExactFrom,
+    },
+};
+use std::{error::Error, io, time::Instant};
 
-fn fib_luc(mut n: isize) -> (BigInt, BigInt) {
-    if n == 0 {
-        return (BigInt::ZERO, BigInt::new(Sign::Plus, [2].to_vec()))
+const FIVE: Natural = Natural::const_from(5);
+
+fn fib_luc(n: Natural) -> (Natural, Natural) {
+    if n == Natural::ZERO {
+        return (Natural::ZERO, Natural::TWO);
     }
 
-    if n < 0 {
-        n *= -1;
-        let (fib, luc) = fib_luc(n);
-        let k = n % 2 * 2 - 1;
-        return (fib * k, luc * k)
+    if &n & &Natural::ONE == 1 {
+        let (fib, luc) = fib_luc(n - Natural::ONE);
+        return (&fib + &luc >> 1, FIVE * &fib + &luc >> 1);
     }
 
-    if n & 1 == 1 {
-        let (fib, luc) = fib_luc(n - 1);
-        return (&fib + &luc >> 1, 5 * &fib + &luc >> 1)
-    }
-
-    n >>= 1;
-    let k = n % 2 * 2 - 1;
-    let (fib, luc) = fib_luc(n);
-    (&fib * &luc, &luc * &luc + 2 * k)
+    let (fib, luc) = fib_luc(&n >> 1);
+    (
+        &fib * &luc,
+        luc.square() + ((n & Natural::TWO) << 1) - Natural::TWO,
+    )
 }
 
-fn main() {
-    let mut s = String::new();
-    std::io::stdin().read_line(&mut s).unwrap();
-    s = s.trim().to_string();
-    let n = s.parse::<isize>().unwrap();
-    let start = std::time::Instant::now();
-    let fib = fib_luc(n).0;
+fn main() -> Result<(), Box<dyn Error>> {
+    let mut number = String::new();
+    io::stdin().read_line(&mut number)?;
+    let number = number.trim().parse::<isize>()?;
+
+    let start = Instant::now();
+    let (fib, _) = fib_luc(Natural::exact_from(number));
     let elapsed = start.elapsed();
-    // println!("{}", fib);
+    //println!("{}", fib);
     println!("{:?}", elapsed);
+
+    Ok(())
 }
