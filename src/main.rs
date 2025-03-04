@@ -1,14 +1,14 @@
+use anyhow::anyhow;
 use malachite::{
-    Natural,
+    Integer,
     base::num::{
         arithmetic::traits::Square,
         basic::traits::{One, Two, Zero},
-        conversion::traits::ExactFrom,
     },
 };
-use std::{error::Error, io, time::Instant};
+use std::{io, time::Instant};
 
-const FIVE: Natural = Natural::const_from(5);
+const FIVE: Integer = Integer::const_from_unsigned(5);
 
 fn fib_luc(n: Integer) -> (Integer, Integer) {
     if n == Integer::ZERO {
@@ -33,13 +33,16 @@ fn fib_luc(n: Integer) -> (Integer, Integer) {
     )
 }
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> anyhow::Result<()> {
     let mut number = String::new();
     io::stdin().read_line(&mut number)?;
-    let number = number.trim().parse::<isize>()?;
+    let number = number
+        .trim()
+        .parse::<Integer>()
+        .map_err(|_| anyhow!("unable to parse integer"))?;
 
     let start = Instant::now();
-    let (fib, _) = fib_luc(Natural::exact_from(number));
+    let (fib, _) = fib_luc(number.clone());
     let elapsed = start.elapsed();
     //println!("{}", fib);
     println!("{:?}", elapsed);
