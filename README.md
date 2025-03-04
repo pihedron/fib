@@ -14,7 +14,7 @@ git clone
 
 Run the release version for best performance.
 ```sh
-cargo run --release
+cargo run -r
 ```
 
 ## Benchmarks
