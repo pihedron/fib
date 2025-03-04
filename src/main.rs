@@ -10,20 +10,26 @@ use std::{error::Error, io, time::Instant};
 
 const FIVE: Natural = Natural::const_from(5);
 
-fn fib_luc(n: Natural) -> (Natural, Natural) {
-    if n == Natural::ZERO {
-        return (Natural::ZERO, Natural::TWO);
+fn fib_luc(n: Integer) -> (Integer, Integer) {
+    if n == Integer::ZERO {
+        return (Integer::ZERO, Integer::TWO);
     }
 
-    if &n & &Natural::ONE == 1 {
-        let (fib, luc) = fib_luc(n - Natural::ONE);
+    if &n < &Integer::ZERO {
+        let (fib, luc) = fib_luc(-&n);
+        let k = ((-n & Integer::TWO) << 1) - Integer::TWO;
+        return (fib * &k, luc * k);
+    }
+
+    if &n & &Integer::ONE == 1 {
+        let (fib, luc) = fib_luc(n - Integer::ONE);
         return (&fib + &luc >> 1, FIVE * &fib + &luc >> 1);
     }
 
     let (fib, luc) = fib_luc(&n >> 1);
     (
         &fib * &luc,
-        luc.square() + ((n & Natural::TWO) << 1) - Natural::TWO,
+        luc.square() + ((n & Integer::TWO) << 1) - Integer::TWO,
     )
 }
 
