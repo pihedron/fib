@@ -1,36 +1,51 @@
-use num_bigint::{BigInt, Sign};
+use anyhow::anyhow;
+use malachite::{
+    Integer,
+    base::num::{
+        arithmetic::traits::Square,
+        basic::traits::{One, Two, Zero},
+    },
+};
+use std::{io, time::Instant};
 
-fn fib_luc(mut n: isize) -> (BigInt, BigInt) {
-    if n == 0 {
-        return (BigInt::ZERO, BigInt::new(Sign::Plus, [2].to_vec()))
+const FIVE: Integer = Integer::const_from_unsigned(5);
+
+fn fib_luc(n: Integer) -> (Integer, Integer) {
+    if n == Integer::ZERO {
+        return (Integer::ZERO, Integer::TWO);
     }
 
-    if n < 0 {
-        n *= -1;
-        let (fib, luc) = fib_luc(n);
-        let k = n % 2 * 2 - 1;
-        return (fib * k, luc * k)
+    if &n < &Integer::ZERO {
+        let k = ((-&n & Integer::ONE) << 1) - Integer::ONE;
+        let (fib, luc) = fib_luc(-n);
+        return (fib * &k, luc * k);
     }
 
-    if n & 1 == 1 {
-        let (fib, luc) = fib_luc(n - 1);
-        return (&fib + &luc >> 1, 5 * &fib + &luc >> 1)
+    if &n & &Integer::ONE == 1 {
+        let (fib, luc) = fib_luc(n - Integer::ONE);
+        return (&fib + &luc >> 1, FIVE * &fib + &luc >> 1);
     }
 
-    n >>= 1;
-    let k = n % 2 * 2 - 1;
-    let (fib, luc) = fib_luc(n);
-    (&fib * &luc, &luc * &luc + 2 * k)
+    let (fib, luc) = fib_luc(&n >> 1);
+    (
+        &fib * &luc,
+        luc.square() + ((n & Integer::TWO) << 1) - Integer::TWO,
+    )
 }
 
-fn main() {
-    let mut s = String::new();
-    std::io::stdin().read_line(&mut s).unwrap();
-    s = s.trim().to_string();
-    let n = s.parse::<isize>().unwrap();
-    let start = std::time::Instant::now();
-    let fib = fib_luc(n).0;
+fn main() -> anyhow::Result<()> {
+    let mut number = String::new();
+    io::stdin().read_line(&mut number)?;
+    let number = number
+        .trim()
+        .parse::<Integer>()
+        .map_err(|_| anyhow!("unable to parse integer"))?;
+
+    let start = Instant::now();
+    let (fib, _) = fib_luc(number.clone());
     let elapsed = start.elapsed();
-    // println!("{}", fib);
+    //println!("{}", fib);
     println!("{:?}", elapsed);
+
+    Ok(())
 }
